@@ -2,11 +2,10 @@
   "builds": [
     {
       "src": "app.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "static/**",
-      "use": "@vercel/static"
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.11"
+      }
     }
   ],
   "routes": [
@@ -16,7 +15,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "static/$1"
+      "dest": "docs/$1"
     }
   ]
 }
