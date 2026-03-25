@@ -162,7 +162,7 @@ async function runSimulation(e) {
     };
 
     try {
-        const response = await fetch('/api/simulate', {
+        const response = await fetch('/simulate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(params)
