@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import numpy as np
-import uvicorn
 import os
 
 app = FastAPI()
@@ -19,17 +18,17 @@ app.add_middleware(
 class SimulationParams(BaseModel):
     num_contractors: int = 5
     episodes: int = 50000
-    auction_type: str = "first_price" # "first_price", "second_price", "average_bid"
+    auction_type: str = "first_price"
     min_cost: float = 80.0
     max_cost: float = 120.0
 
-@app.post("/simulate")
+@app.post("/api/simulate")
 def run_simulation(params: SimulationParams):
     np.random.seed(42)
     
     N_AGENTS = params.num_contractors
     N_EPISODES = params.episodes
-    MARKUP_ACTIONS = np.linspace(0.0, 0.40, 21) 
+    MARKUP_ACTIONS = np.linspace(0.0, 0.40, 21)
     N_ACTIONS = len(MARKUP_ACTIONS)
     LEARNING_RATE = 0.05
     
@@ -43,16 +42,13 @@ def run_simulation(params: SimulationParams):
     average_profits = []
     rolling_profits = np.zeros(N_AGENTS)
     
-    # Track episodes for plotting
     plot_interval = N_EPISODES // 100 if N_EPISODES >= 100 else 1
     
     for episode in range(N_EPISODES):
         epsilon = max(EPSILON_END, EPSILON_START * (EPSILON_DECAY ** episode))
         
-        # True cost for the project
         true_cost = np.random.uniform(params.min_cost, params.max_cost)
         
-        # Signals/Estimates - using a +/- 15% error margin
         variance = true_cost * 0.15
         signals = np.random.uniform(true_cost - variance, true_cost + variance, N_AGENTS)
         
@@ -104,8 +100,7 @@ def run_simulation(params: SimulationParams):
             avg_markup = np.mean(MARKUP_ACTIONS[greedy_actions])
             average_markups.append(float(avg_markup))
             average_profits.append(float(np.mean(rolling_profits)))
-            
-    # Prepare data for frontend
+    
     episodes_x = [i * plot_interval for i in range(len(average_markups))]
     
     q_values_data = {}
@@ -120,10 +115,7 @@ def run_simulation(params: SimulationParams):
         "q_values": q_values_data
     }
 
-# Mount the static files (the frontend) at the root
-frontend_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "frontend")
-if os.path.exists(frontend_path):
-    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+# Serve static files
+static_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+if os.path.exists(static_path):
+    app.mount("/", StaticFiles(directory=static_path, html=True), name="static")
