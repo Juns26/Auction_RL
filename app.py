@@ -115,7 +115,7 @@ def run_simulation(params: SimulationParams):
         "q_values": q_values_data
     }
 
-# Serve static files - this will serve everything from /docs at the root
+# Serve static files from docs folder
 static_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
 if os.path.exists(static_path):
     app.mount("/", StaticFiles(directory=static_path, html=True), name="docs")
