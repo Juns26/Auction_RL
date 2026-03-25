@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import numpy as np
 import os
@@ -116,6 +117,9 @@ def run_simulation(params: SimulationParams):
     }
 
 # Serve static files
-static_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
-if os.path.exists(static_path):
-    app.mount("/", StaticFiles(directory=static_path, html=True), name="static")
+@app.get("/")
+async def read_root():
+    return FileResponse('docs/index.html')
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="docs"), name="static")
