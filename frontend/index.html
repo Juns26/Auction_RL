@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tender Bidding Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .charts-grid-top {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1>Algorithmic Contract Bidding</h1>
+            <p>Simulating Bounded Rationality & The Winner's Curse using MARL</p>
+        </header>
+        
+        <div class="main-content">
+            <aside class="sidebar glass-panel">
+                <h2>Simulation Parameters</h2>
+                <form id="sim-form">
+                    <div class="form-group">
+                        <label for="auctionType">Auction Type</label>
+                        <select id="auctionType" name="auctionType">
+                            <option value="first_price">First-Price Sealed-Bid</option>
+                            <option value="second_price">Second-Price (Vickrey)</option>
+                            <option value="average_bid">Average-Bid (Closest Below)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="numContractors">Number of Contractors</label>
+                        <input type="number" id="numContractors" value="5" min="2" max="20">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="episodes">Learning Episodes</label>
+                        <input type="number" id="episodes" value="50000" min="1000" max="200000" step="1000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="minCost">Minimum Project Cost</label>
+                        <input type="number" id="minCost" value="80" step="any">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="maxCost">Maximum Project Cost</label>
+                        <input type="number" id="maxCost" value="120" step="any">
+                    </div>
+                    
+                    <button type="submit" id="sim-btn" class="btn-primary">
+                        <span id="btn-text">Run Simulation</span>
+                        <div id="btn-spinner" class="spinner hidden"></div>
+                    </button>
+                    <p class="desc-text mt-4">This dynamic platform allows you to alter the rules of the game to see if AI contractors learn to shade their bids differently based on the auction mechanism and market competition.</p>
+                </form>
+            </aside>
+            
+            <main class="dashboard">
+                <div class="charts-grid-top">
+                    <div class="chart-container glass-panel">
+                        <h3>Learned Markup Policy Over Time</h3>
+                        <canvas id="markupChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container glass-panel">
+                        <h3>Average Rolling Profit (Winner's Curse Avoidance)</h3>
+                        <canvas id="profitChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container glass-panel width-full">
+                    <h3>Final Q-Value Distributions (Expected Profit vs Markup)</h3>
+                    <canvas id="qChart"></canvas>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
